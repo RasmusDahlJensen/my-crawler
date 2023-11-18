@@ -1,4 +1,3 @@
-// You don't need to import RequestQueue anymore
 import { CheerioCrawler } from "crawlee";
 
 const crawler = new CheerioCrawler({
@@ -8,5 +7,4 @@ const crawler = new CheerioCrawler({
 	},
 });
 
-// Start the crawler with the provided URLs
 await crawler.run(["https://crawlee.dev"]);
