@@ -1,21 +1,37 @@
 import { CheerioCrawler } from "crawlee";
-import { URL } from "node:url";
 
 const crawler = new CheerioCrawler({
 	maxRequestsPerCrawl: 20,
 	async requestHandler({ request, $ }) {
-		const title = $("title").text();
-		console.log(`The title of "${request.url}" is: ${title}.`);
+		const jobPostings = [];
 
-		const links = $("a[href]")
-			.map((_, el) => $(el).attr("href"))
-			.get();
+		$(".jobsearch-result").each((_, element) => {
+			const company = $(element)
+				.find(".jix-toolbar-top__company a")
+				.text()
+				.trim();
+			const title = $(element).find("h4 a").text().trim();
+			const link = new URL(
+				$(element).find("h4 a").attr("href"),
+				request.loadedUrl
+			).href;
+			const description = $(element).find(".PaidJob-inner > p").text().trim();
 
-		const absoluteUrls = links.map(
-			(link) => new URL(link, request.loadedUrl).href
-		);
+			jobPostings.push({
+				company,
+				title,
+				link,
+				description,
+			});
+		});
 
-		await crawler.addRequests(absoluteUrls);
+		// Console job information
+		jobPostings.forEach((job) => {
+			console.log(`Company: ${job.company}`);
+			console.log(`Job Title: ${job.title}`);
+			console.log(`Job Link: ${job.link}`);
+			console.log(`Description: ${job.description}`);
+		});
 	},
 });
 
